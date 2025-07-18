@@ -1,0 +1,12 @@
+{
+  "TITLE": "AI Prompt Rewriter",
+  "INPUT_PLACEHOLDER": "Enter your original prompt",
+  "STYLE": "Rewrite Style",
+  "STYLE_PRO": "Professional",
+  "STYLE_CASUAL": "Casual",
+  "STYLE_HUMOROUS": "Humorous",
+  "MODEL": "Model",
+  "BUTTON_REWRITE": "Rewrite Prompt",
+  "RESULT": "Rewritten Result",
+  "HISTORY": "History"
+}

@@ -1,0 +1,24 @@
+<div class="max-w-xl mx-auto bg-white p-6 shadow rounded mt-10">
+    <h2 class="text-xl font-semibold mb-4">{{ 'TITLE' | translate }}</h2>
+    <textarea [(ngModel)]="prompt" [placeholder]="'INPUT_PLACEHOLDER' | translate" rows="4" 
+              class="w-full h-32 p-2 border rounded mb-4"></textarea>
+    <div class="mb-4">
+        <label *ngFor="let s of ['professional', 'casual', 'humorous']" class="mr-4">
+            <input type="radio" name="style" [(ngModel)]="style" [value]="s" class="mr-1" />
+            {{ s.toUpperCase() | translate }}
+        </label>
+    </div>
+    <button (click)="submit()" [disabled]="loading || !prompt.trim()"
+            class="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50">
+            {{ loading ? 'Processing...' : ('BUTTON_REWRITE' | translate) }}   
+    </button>
+
+    <div *ngIf="result" class="mt-6 bg-gray-100 p-4 rounded">
+        <strong>{{ 'RESULT' | translate }}:</strong>
+        <p class="whitespace-pre-wrap mt-2">{{ result }}</p>
+    </div>
+
+    <div *ngIf="error" class="mt-4 bg-red-100 text-red-700 p-4 rounded">
+        <strong>Error:</strong> {{ error }}
+    </div>
+</div>
