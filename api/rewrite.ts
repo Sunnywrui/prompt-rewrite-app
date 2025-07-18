@@ -1,4 +1,4 @@
-module.exports = async function handler(req, res) {
+module.exports = async function handler(req: any, res: any) {
   // 设置 CORS 头
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -15,7 +15,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { prompt, style } = req.body;
+    const { prompt, style }: { prompt: string; style: string } = req.body;
 
     // 验证输入参数
     if (!prompt || !style) {
@@ -23,7 +23,7 @@ module.exports = async function handler(req, res) {
     }
 
     // 定义风格指令
-    const styleInstructions = {
+    const styleInstructions: Record<string, string> = {
       professional: 'Rewrite the following in a formal and professional tone.',
       casual: 'Rewrite the following in a casual, friendly tone.',
       humorous: 'Rewrite the following to be funny or witty, while keeping the meaning.',
@@ -51,7 +51,7 @@ module.exports = async function handler(req, res) {
         messages: [
           {
             role: 'user',
-            content: `${instruction}\n\nOriginal text: ${prompt}`
+            content: `${instruction}\n\n${prompt}`
           }
         ],
         max_tokens: 500,
@@ -60,36 +60,21 @@ module.exports = async function handler(req, res) {
     });
 
     if (!response.ok) {
-      console.error('OpenAI API error:', response.status, response.statusText);
-      return res.status(response.status).json({ 
-        error: 'OpenAI API request failed',
-        details: response.statusText 
-      });
+      const errorData = await response.json();
+      console.error('OpenAI API error:', errorData);
+      return res.status(500).json({ error: 'Failed to generate rewrite' });
     }
 
     const data = await response.json();
+    const rewrittenText = data.choices[0]?.message?.content;
     
-    // 检查返回数据格式
-    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-      console.error('Unexpected API response format:', data);
-      return res.status(500).json({ error: 'Unexpected API response format' });
+    if (!rewrittenText) {
+            return res.status(500).json({ error: 'No rewritten text received' });
     }
 
-    const rewrittenText = data.choices[0].message.content;
-
-    // 返回成功响应
-    res.status(200).json({
-      success: true,
-      rewrittenText: rewrittenText,
-      originalPrompt: prompt,
-      style: style
-    });
-
-  } catch (error) {
-    console.error('Error in rewrite function:', error);
-    res.status(500).json({
-      error: 'Internal server error',
-      message: error.message
-    });
+    return res.status(200).json({ rewrittenText });  
+  } catch (error: unknown) {
+    console.error('Error in handler:', error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 };
